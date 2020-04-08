@@ -57,9 +57,10 @@ export default {
 		...mapGetters('ROOM', ['ROOM']),
 		topScorers() {
 			return this.ROOM.users
+				.filter(u => u.score)
 				.sort((a, b) => b.score && a.score ? b.score - a.score : 0)
 				.map(u => ({ name: u.name, score: (u.score / 50) * 100 }))
-				.slice(0, 2)
+				.slice(0, 3)
 		}
 	},
 	methods: {

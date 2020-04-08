@@ -48,11 +48,11 @@ const actions = {
       commit('SET_STATE', { room: data })
       return { name: data.name }
    },
-   UPDATE_SCORE: async ({ commit, state }, score) => {
-      let { error, message } = await ROOMS.UPDATE_SCORE({
+   UPDATE_SCORE: async ({ state, dispatch }, score) => {
+      await ROOMS.UPDATE_SCORE({
          roomId: state.room.id, userId: state.room.joinedAs.id, score
       })
-      console.log(error, message)
+      dispatch('FETCH_ROOM', state.room.name)
    }
 }
 
