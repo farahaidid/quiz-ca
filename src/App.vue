@@ -7,6 +7,13 @@
 		</main>
 	</div>
 </template>
+<script>
+import { FadeTransition } from "vue2-transitions";
+export default {
+	name: "App",
+	components: { FadeTransition }
+};
+</script>
 
 <style lang="scss">
 	#app {
@@ -14,5 +21,8 @@
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 		color: #212121;
+	}
+	.spacer {
+		width: 100%;
 	}
 </style>

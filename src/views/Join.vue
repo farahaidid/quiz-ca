@@ -20,12 +20,31 @@
 						body-classes="px-lg-5 py-lg-5"
 						class="border-0"
 					>
-						<h4 class="text-center mb-4">Enter your name and room key to join</h4>
+						<h5 class="text-center mb-4">Join a room with room name or code</h5>
 						<form role="form">
-							<base-input alternative type="text" class="mb-3" placeholder="Room name or code"></base-input>
-							<base-input alternative type="text" placeholder="Enter your name"></base-input>
-							<div class="text-center">
-								<base-button type="primary" class="mt-4">Join room</base-button>
+							<div v-if="error" class="alert alert-danger" role="alert">
+								<strong>{{error}}</strong>
+								<button
+									@click="error=null"
+									type="button"
+									class="close"
+									data-dismiss="alert"
+									aria-label="Close"
+								>
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<base-input
+								v-model="room.nameOrCode"
+								alternative
+								type="text"
+								placeholder="Room name or code"
+							/>
+							<base-checkbox v-model="room.isCode" class="mb-3">It is a room code</base-checkbox>
+							<base-input v-model="room.userName" alternative type="text" placeholder="Enter your name" />
+							<div class="mt-4">
+								<base-button @click="onClickJoinRoom" type="primary">Join room</base-button>
+								<router-link to="/create" class="ml-4">Create a new room</router-link>
 							</div>
 						</form>
 					</card>
@@ -35,7 +54,41 @@
 	</section>
 </template>
 <script>
-export default {};
+
+// Vuex
+import { mapActions } from "vuex"
+
+export default {
+	name: "Join",
+	data: () => ({
+		error: null,
+		room: {
+			nameOrCode: "",
+			isCode: false,
+			userName: ""
+		}
+	}),
+	methods: {
+		...mapActions("ROOM", ["JOIN_ROOM"]),
+		async onClickJoinRoom() {
+			let isValid = this.room.nameOrCode.trim() !== "" && this.room.userName.trim() !== ""
+			if (isValid) {
+				if (this.error) { this.error = null }
+				let { error, message, name } = await this.JOIN_ROOM({
+					isCode: this.room.isCode,
+					[this.room.isCode ? 'code' : 'name']: this.room.nameOrCode,
+					userName: this.room.userName
+				})
+				if (error) { this.error = message }
+				else {
+					this.error = null
+					this.$router.push("/rooms/" + name.toLowerCase().split(" ").join("-"))
+				}
+			}
+			else { this.error = "You cann't leave the fields empty!" }
+		}
+	}
+};
 </script>
 <style lang="scss" scoped>
 	.section {

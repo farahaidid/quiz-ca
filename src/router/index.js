@@ -9,13 +9,28 @@ Vue.use(VueRouter)
 const routes = [
    {
       path: '/',
-      name: 'Dashboard',
-      component: views('Dashboard')
+      name: 'Home',
+      component: views('Home'),
+      children: [
+         {
+            path: '',
+            component: views("Home/Dashboard")
+         },
+         {
+            path: '/rooms/:name',
+            component: views("Home/Room")
+         }
+      ]
    },
    {
       path: '/join',
       name: 'Join',
       component: views('Join')
+   },
+   {
+      path: '/create',
+      name: 'CreateRoom',
+      component: views('CreateRoom')
    }
 ]
 
