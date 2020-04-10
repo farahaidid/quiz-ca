@@ -12,6 +12,7 @@ import BaseSwitch from "@/components/VueArgon/BaseSwitch";
 import Card from "@/components/VueArgon/Card";
 import Icon from "@/components/VueArgon/Icon";
 import CloseButtom from "@/components/VueArgon/CloseButton"
+import Modal from "@/components/VueArgon/Modal"
 
 export default {
    install(Vue) {
@@ -29,5 +30,6 @@ export default {
       Vue.component(Card.name, Card);
       Vue.component(Icon.name, Icon);
       Vue.component(CloseButtom.name, CloseButtom);
+      Vue.component(Modal.name, Modal);
    }
 };

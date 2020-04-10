@@ -3,16 +3,27 @@
 		<div class="container">
 			<card class="mb-3">
 				<header class="d-flex">
-					<p class="lead my-0 mb-2 w-100">{{ROOM.name}}</p>
+					<p class="lead my-0 mb-0 w-100">{{ROOM.name}}</p>
 					<div class="spacer"></div>
 					<base-button @click="quizStarted=true" type="primary">Start quiz</base-button>
 				</header>
+				<div class="d-flex">
+					<p class="code mb-0 mr-5">
+						<span class="text-dark">CODE : </span>
+						<span>{{ROOM.code}}</span>
+					</p>
+					<p class="code mb-0">
+						<span class="text-dark">YOUR SCORE : </span>
+						<span>{{myScore}}</span>
+					</p>
+				</div>
+				<hr class="my-3" />
 				<badge type="success" rounded>DIFFICULTY : {{ROOM.difficulty}}</badge>
-				<badge type="primary" rounded>PERTICIPANTS : {{ROOM.users.length}}</badge>
-				<badge type="warning" rounded>TOP SCORE : 48/50</badge>
-				<badge type="danger" rounded>AVERAGE SCORE : 32/50</badge>
+				<badge type="primary" rounded>PERTICIPANTS : {{ROOM.noOfUsers}}</badge>
+				<badge type="warning" rounded>TOP SCORE : {{topScore}} / 50</badge>
+				<badge type="danger" rounded>AVERAGE SCORE : {{averageScore}}</badge>
 			</card>
-			<card>
+			<card v-if="topScorers.length>0">
 				<p class="lead my-0">Leaderboard</p>
 				<badge type="success" class="mb-3" rounded>TOP THREE SCORER</badge>
 				<div class="top-3">
@@ -56,11 +67,27 @@ export default {
 	computed: {
 		...mapGetters('ROOM', ['ROOM']),
 		topScorers() {
-			return this.ROOM.users
+			return this.ROOM.users ? this.ROOM.users
 				.filter(u => u.score)
 				.sort((a, b) => b.score && a.score ? b.score - a.score : 0)
-				.map(u => ({ name: u.name, score: (u.score / 50) * 100 }))
-				.slice(0, 3)
+				.map(u => ({ name: u.name, score: u.score * 2 }))
+				.slice(0, 3) : []
+		},
+		topScore() {
+			return this.topScorers.length > 0 ? this.topScorers[0].score / 2 : 0
+		},
+		averageScore() {
+			if (!this.ROOM.users) { return 0 }
+			let totalScore = this.ROOM.users.reduce(
+				(totalScore, user) => user.score ? totalScore + user.score : totalScore
+				, 0
+			)
+			return (totalScore / this.ROOM.noOfUsers).toFixed(2)
+		},
+		myScore() {
+			if (!this.ROOM.users) return 0
+			let user = this.ROOM.users.find(user => user.name === this.ROOM.joinedAs.name)
+			return user ? user.score : 0
 		}
 	},
 	methods: {
@@ -68,3 +95,11 @@ export default {
 	}
 }
 </script>
+<style lang="scss" scoped>
+	.code {
+		font-size: 0.8em;
+		.text-dark {
+			color: #757575 !important;
+		}
+	}
+</style>

@@ -14,19 +14,9 @@
 		</div>
 
 		<ul class="navbar-nav ml-lg-auto">
-			<li class="nav-item">
-				<a class="nav-link nav-link-icon" href="#">Discover</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link nav-link-icon" href="#">Profile</a>
-			</li>
-			<base-dropdown tag="li" title="Settings">
-				<a class="dropdown-item" href="#">Action</a>
-				<a class="dropdown-item" href="#">Another action</a>
-				<a class="dropdown-item" href="#">Something else here</a>
-				<div class="dropdown-divider"></div>
-				<a class="dropdown-item" href="#">Separated link</a>
-			</base-dropdown>
+			<router-link to="/join" class="mt-1 mr-3">
+				<base-button type="warning">Join room</base-button>
+			</router-link>
 			<router-link to="/create" class="mt-1">
 				<base-button type="success">Create room</base-button>
 			</router-link>

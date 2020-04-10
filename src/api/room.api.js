@@ -5,9 +5,9 @@ import UID from "../helpers/uid"
 // Timestamp of current datetime
 let now = () => new Date(new Date().toISOString()).getTime()
 
-const FETCH_ROOMS = async (limit = 15, orderBy = "createdAt") => {
+const FETCH_ROOMS = async (limit = 50, orderBy = "createdAt") => {
    try {
-      let roomsSnapshot = await ROOMS.orderBy(orderBy).limit(limit).get()
+      let roomsSnapshot = await ROOMS.orderBy(orderBy, 'desc').limit(limit).get()
       let rooms = []
       roomsSnapshot.forEach(room => rooms.push({ id: room.id, ...room.data() }))
       return { error: false, data: rooms }
@@ -40,7 +40,6 @@ const FETCH_ROOM = async name => {
 }
 
 const CREATE_ROOM = async req => {
-   console.log("API -> CREATE_ROOM => ", req)
    try {
       // Conditions
       let condition = ["name", "==", req.name.toUpperCase()]
@@ -54,7 +53,7 @@ const CREATE_ROOM = async req => {
          // New Room data
          let newRoomData = {
             name: req.name.toUpperCase(), createdAt: now(),
-            code: UID().toUpperCase(),
+            code: UID().toUpperCase(), noOfUsers: 1,
             difficulty: req.difficulty,
          }
 
@@ -71,17 +70,17 @@ const CREATE_ROOM = async req => {
          let newUser = await USERS(newRoom.id).add(newUserData)
 
          // Fetching questions
-         let questions = (await QUESTIONS_API.get("?amount=100&difficulty=" + req.difficulty.toLowerCase())).data
+         let questions = (await QUESTIONS_API.get("?amount=50&difficulty=" + req.difficulty.toLowerCase())).data
 
          // New questions data
          let newQuestionsData = {
-            amount: 100, difficulty: req.difficulty,
+            amount: 50, difficulty: req.difficulty,
             questions: questions.results,
             createdAt: now(), updatedAt: now()
          }
 
          // Creating questions
-         QUESTIONS(newRoom.id).doc("V1").set(newQuestionsData)
+         await QUESTIONS(newRoom.id).doc("V1").set(newQuestionsData)
 
          // Returning response
          return {
@@ -95,13 +94,11 @@ const CREATE_ROOM = async req => {
       return { error: true, code: 409, message: "Room already exist!" }
    }
    catch (error) {
-      console.log(error)
       return { error: true, message: error.message }
    }
 }
 
 const JOIN_ROOM = async req => {
-   console.log("JOIN_ROOM => ", req)
    try {
       // Conditions
       let condition = [req.isCode ? "code" : "name", "==", req.isCode ? req.code : req.name.toUpperCase()]
@@ -139,6 +136,8 @@ const JOIN_ROOM = async req => {
       let newUserData = { name: req.userName.toUpperCase(), joinedAt: now() }
       let newUser = await USERS(room.id).add(newUserData)
 
+      // Updating Number of users
+      room.ref.update({ noOfUsers: room.data().noOfUsers + 1 })
 
       // Returning data
       return {
@@ -155,7 +154,6 @@ const JOIN_ROOM = async req => {
 }
 
 const UPDATE_SCORE = async req => {
-   console.log(req)
    try {
       await USERS(req.roomId).doc(req.userId).update({ score: req.score })
       return { message: "UPDATED" }

@@ -2,7 +2,7 @@ import ROOMS from "../../api/room.api"
 
 const initialState = {
    rooms: [],
-   room: {}
+   room: null
 }
 
 const state = { ...initialState }
@@ -26,7 +26,6 @@ const actions = {
       return { error }
    },
    FETCH_ROOM: async ({ commit, state }, payload) => {
-      console.log("FETCH_ROOM => ", payload)
       let { error, data, message } = await ROOMS.FETCH_ROOM(payload)
       if (error) { return { error, message } }
       commit('SET_STATE', { room: { ...state.room, ...data } })
@@ -42,9 +41,7 @@ const actions = {
    },
    CREATE_ROOM: async ({ commit }, payload) => {
       let { error, data, message } = await ROOMS.CREATE_ROOM(payload)
-      if (error) {
-         return { error, message }
-      }
+      if (error) { return { error, message } }
       commit('SET_STATE', { room: data })
       return { name: data.name }
    },

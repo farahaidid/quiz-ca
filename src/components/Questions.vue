@@ -40,7 +40,6 @@ export default {
 			options.splice(randomIndex, 0, qs.correct_answer)
 			return { ...qs, checked: null, options }
 		}) : []
-		console.log(this.questions)
 	},
 	methods: {
 		...mapActions('ROOM', ['UPDATE_SCORE']),
