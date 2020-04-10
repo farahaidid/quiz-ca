@@ -37,8 +37,8 @@
 							</div>
 							<base-input v-model="roomName" alternative type="text" placeholder="Enter room name" />
 							<base-input v-model="userName" alternative type="text" placeholder="Enter your name" />
-							<div class="row">
-								<base-dropdown class="col">
+							<div class="d-flex">
+								<base-dropdown>
 									<base-button slot="title" type="secondary" class="dropdown-toggle w-100">{{difficulty}}</base-button>
 									<li
 										v-for="(item, index) in difficulties"
@@ -47,7 +47,8 @@
 										class="dropdown-item"
 									>{{item}}</li>
 								</base-dropdown>
-								<div class="text-center col">
+                        <div class="spacer"></div>
+								<div class="text-center">
 									<base-button @click="createRoom" type="primary">Create room</base-button>
 								</div>
 							</div>
@@ -55,6 +56,9 @@
 								<router-link to="/join">Join a room</router-link>
 							</div>
 						</form>
+						<div v-if="loading" class="overlay pos-rel">
+							<tile-spinner class="to-center" />
+						</div>
 					</card>
 				</div>
 			</div>
@@ -74,18 +78,21 @@ export default {
 		userName: "",
 		// Difficulty
 		difficulty: "Easy",
-		difficulties: ['Easy', 'Medium', 'Hard']
+		difficulties: ['Easy', 'Medium', 'Hard'],
+		loading: false
 	}),
 	methods: {
 		...mapActions("ROOM", ["CREATE_ROOM"]),
 		async createRoom() {
 			let isValid = this.roomName.trim() !== "" && this.userName.trim() !== ""
 			if (isValid) {
+				this.loading = true;
 				let { error, message, name } = await this.CREATE_ROOM({
 					name: this.roomName,
 					userName: this.userName,
 					difficulty: this.difficulty
 				})
+				this.loading = false
 				if (error) { this.error = message }
 				else {
 					if (this.error) this.error = null
@@ -100,4 +107,5 @@ export default {
 	.section {
 		min-height: 100vh;
 	}
+	
 </style>

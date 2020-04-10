@@ -1,5 +1,8 @@
 <template>
 	<div class="Dashboard py-3">
+		<div v-if="loading" class="overlay">
+			<tile-spinner class="to-center" />
+		</div>
 		<div class="container">
 			<div class="d-flex mb-3">
 				<h5 class="mb-4 w-100 mt-2">Newest rooms</h5>
@@ -12,7 +15,7 @@
 				</div>
 			</div>
 			<div v-else class="text-center">
-				<h4>No rooms found!</h4>
+				<h4 v-if="!loading">No rooms found!</h4>
 			</div>
 			<modal :show.sync="showJoinModal">
 				<template slot="header">
@@ -51,6 +54,9 @@ export default {
 	name: 'Dashboard',
 	components: { RoomCard },
 	data: () => ({
+		// Booleans
+		loading: true,
+
 		filterKey: "",
 		rooms: [],
 		// Modal
@@ -59,13 +65,16 @@ export default {
 		modalRoom: { userName: "" },
 	}),
 	created() {
-		this.rooms = [...this.ROOMS]
+		this.FETCH_ROOMS().then(({ rooms }) => {
+			this.rooms = rooms;
+			this.loading = false
+		})
 	},
 	computed: {
 		...mapGetters('ROOM', ["ROOMS"])
 	},
 	methods: {
-		...mapActions("ROOM", ["JOIN_ROOM"]),
+		...mapActions("ROOM", ["JOIN_ROOM", "FETCH_ROOMS"]),
 		filterRooms() {
 			this.rooms = this.ROOMS.filter(room => {
 				return room.name.includes(this.filterKey.toUpperCase())
@@ -97,7 +106,8 @@ export default {
 		filterKey() { this.filterRooms() },
 		showJoinModal(val) {
 			if (!val) { this.modalRoom = { userName: "" } }
-		}
+		},
+		//ROOMS(rooms) { this.rooms = rooms }
 	}
 }
 </script>

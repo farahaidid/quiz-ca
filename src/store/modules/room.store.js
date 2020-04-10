@@ -23,7 +23,7 @@ const actions = {
       let { error, data, mesaage } = await ROOMS.FETCH_ROOMS()
       if (error) return { error, mesaage }
       commit('SET_STATE', { rooms: data })
-      return { error }
+      return { error, rooms: data }
    },
    FETCH_ROOM: async ({ commit, state }, payload) => {
       let { error, data, message } = await ROOMS.FETCH_ROOM(payload)

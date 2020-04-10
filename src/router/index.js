@@ -9,11 +9,11 @@ Vue.use(VueRouter)
 const routes = [
    {
       path: '/',
-      name: 'Home',
       component: views('Home'),
       children: [
          {
             path: '',
+            name: 'Dashboard',
             component: views("Home/Dashboard")
          },
          {

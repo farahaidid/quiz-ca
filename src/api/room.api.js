@@ -71,10 +71,13 @@ const CREATE_ROOM = async req => {
 
          // Fetching questions
          let questions = (await QUESTIONS_API.get("?amount=50&difficulty=" + req.difficulty.toLowerCase())).data
+         let questions2 = (await QUESTIONS_API.get("?amount=50&difficulty=" + req.difficulty.toLowerCase())).data
+
+         questions.results = questions.results.concat(questions2.results)
 
          // New questions data
          let newQuestionsData = {
-            amount: 50, difficulty: req.difficulty,
+            amount: 100, difficulty: req.difficulty,
             questions: questions.results,
             createdAt: now(), updatedAt: now()
          }

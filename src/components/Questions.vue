@@ -8,14 +8,14 @@
 				<span>{{index+1}}.</span>
 				<span>{{qs.question}}</span>
 			</h6>
-			<div class="options">
+			<div class="options ml-3">
 				<base-radio
 					v-for="(option, opi) in qs.options"
 					v-model="qs.checked"
 					:name="option"
 					:key="opi"
-					class="option mb-3"
 					:class="opi%2==0?'right':'left'"
+					class="option mb-3"
 				>{{option}}</base-radio>
 			</div>
 		</card>

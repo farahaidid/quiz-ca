@@ -18,7 +18,7 @@
 						shadow
 						header-classes="bg-white pb-5"
 						body-classes="px-lg-5 py-lg-5"
-						class="border-0"
+						class="join-card border-0"
 					>
 						<h5 class="text-center mb-4">Join a room with room name or code</h5>
 						<form role="form">
@@ -42,11 +42,15 @@
 							/>
 							<base-checkbox v-model="room.isCode" class="mb-3">It is a room code</base-checkbox>
 							<base-input v-model="room.userName" alternative type="text" placeholder="Enter your name" />
-							<div class="mt-4">
-								<base-button @click="onClickJoinRoom" type="primary">Join room</base-button>
-								<router-link to="/create" class="ml-4">Create a new room</router-link>
+							<div class="d-flex mt-4">
+								<base-button @click="onClickJoinRoom" class="w-100" type="primary">Join room</base-button>
+                        <div class="spacer"></div>
+								<router-link to="/create" class="mw-max mt-2">Create a new room</router-link>
 							</div>
 						</form>
+						<div v-if="loading" class="overlay pos-rel">
+							<tile-spinner class="to-center" />
+						</div>
 					</card>
 				</div>
 			</div>
@@ -66,19 +70,22 @@ export default {
 			nameOrCode: "",
 			isCode: false,
 			userName: ""
-		}
+		},
+		loading: false
 	}),
 	methods: {
 		...mapActions("ROOM", ["JOIN_ROOM"]),
 		async onClickJoinRoom() {
 			let isValid = this.room.nameOrCode.trim() !== "" && this.room.userName.trim() !== ""
 			if (isValid) {
+				this.loading = true
 				if (this.error) { this.error = null }
 				let { error, message, name } = await this.JOIN_ROOM({
 					isCode: this.room.isCode,
 					[this.room.isCode ? 'code' : 'name']: this.room.nameOrCode,
 					userName: this.room.userName
 				})
+				this.loading = false
 				if (error) { this.error = message }
 				else {
 					this.error = null
