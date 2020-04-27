@@ -1,11 +1,18 @@
 <template>
-	<div class="room py-5">
+	<div v-if="loading" class="overlay">
+    <tile-spinner class="to-center" />
+  </div>
+	<div class="room py-5" v-else>
 		<div class="container">
-			<card class="mb-3">
+			<div v-if="error" class="alert alert-danger" role="alert">
+				<strong>{{error}}</strong>
+			</div>
+			<card class="mb-3" v-else>
 				<header class="d-flex">
 					<p class="lead my-0 mb-0 w-100">{{ROOM.name}}</p>
 					<div class="spacer"></div>
 					<base-button :disabled="quizStarted" @click="quizStarted=true" type="primary">Start quiz</base-button>
+					<base-button :disabled="quizStarted" @click="gotomanageRoom" type="primary" v-if="userId != null && room.userId != null && room.userId == userId">Manage Room</base-button>
 				</header>
 				<div class="d-flex">
 					<p class="code mb-0 mr-5">
@@ -27,7 +34,7 @@
 				<badge type="warning" rounded>TOP SCORE : {{topScore}} / 50</badge>
 				<badge type="danger" rounded>AVERAGE SCORE : {{averageScore}}</badge>
 			</card>
-			<card class="leaderboard">
+			<card class="leaderboard" v-if="!error">
 				<p class="lead my-0">Leaderboard</p>
 				<!-- <badge type="success" class="mb-3" rounded>TOP THREE SCORER</badge> -->
 				<div v-if="topScorers.length>0" class="scores p-3">
@@ -58,14 +65,28 @@ import Questions from "../../components/Questions"
 export default {
 	name: "Room",
 	data: () => ({
-		quizStarted: false
+		quizStarted: false,
+		room: null,
+		loading: true,
+		error: null
 	}),
 	components: {
 		Questions
 	},
-	created() {
-		let roomName = this.$route.params.name.toUpperCase().split("-").join(" ")
-		this.FETCH_ROOM(roomName)
+	async created() {
+		let roomName = this.$route.params.name
+		await this.FETCH_ROOM(roomName).then(res => {
+			if(!res.error){
+				this.room = res.data
+				console.log(this.checkIsApproved());
+				if(!this.checkIsApproved()){
+					this.error = 'Not Approved yet!'
+				}
+			}else{
+				this.error = res.message
+			}
+			this.loading = false
+		})
 	},
 	watch: {
 		quizStarted(val) {
@@ -77,6 +98,7 @@ export default {
 	},
 	computed: {
 		...mapGetters('ROOM', ['ROOM']),
+		...mapGetters("USER",["userId"]),
 		topScorers() {
 			return this.ROOM.users ? this.ROOM.users
 				.filter(u => u.score)
@@ -103,7 +125,15 @@ export default {
 		}
 	},
 	methods: {
-		...mapActions("ROOM", ['FETCH_ROOM'])
+		...mapActions("ROOM", ['FETCH_ROOM']),
+		gotomanageRoom(){
+			this.$router.push({path: '/manage-room/'+this.room.name})
+		},
+		checkIsApproved(){
+			let user = this.room.users.find(u => u.name == this.ROOM.joinedAs.name)
+			if(user == null) return false
+			return user.isApproved
+		},
 	}
 }
 </script>

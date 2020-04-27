@@ -1,4 +1,5 @@
 import ROOMS from "../../api/room.api"
+import db from "../../firebase/init.firebase"
 
 const initialState = {
    rooms: [],
@@ -29,7 +30,7 @@ const actions = {
       let { error, data, message } = await ROOMS.FETCH_ROOM(payload)
       if (error) { return { error, message } }
       commit('SET_STATE', { room: { ...state.room, ...data } })
-      return { error, message }
+      return { error, message, data }
    },
    JOIN_ROOM: async ({ commit }, payload) => {
       let { error, data, message } = await ROOMS.JOIN_ROOM(payload)
@@ -50,6 +51,12 @@ const actions = {
          roomId: state.room.id, userId: state.room.joinedAs.id, score
       })
       dispatch('FETCH_ROOM', state.room.name)
+   },
+   APPROVE_USER: async ({},{roomId,uId}) => {
+      return await db.collection("Rooms").doc(roomId).collection("Users").doc(uId).update({isApproved:true})
+   },
+   BLOCK_USER: async ({},{roomId,uId}) => {
+      return await db.collection("Rooms").doc(roomId).collection("Users").doc(uId).update({isApproved:false})
    }
 }
 

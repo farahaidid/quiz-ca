@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 
 // Views importer
 const views = name => () => import(`@/views/${name}.vue`)
+const layouts = name => () => import(`@/layouts/${name}.vue`)
 
 Vue.use(VueRouter)
 
@@ -19,18 +20,38 @@ const routes = [
          {
             path: '/rooms/:name',
             component: views("Home/Room")
+         },
+         {
+            path: '/manage-room/:name',
+            component: views("ManageRoom")
          }
       ]
    },
    {
-      path: '/join',
-      name: 'Join',
-      component: views('Join')
-   },
-   {
-      path: '/create',
-      name: 'CreateRoom',
-      component: views('CreateRoom')
+      path: '/',
+      component: layouts("AuthLayout"),
+      children: [
+         {
+            path: 'join',
+            name: 'Join',
+            component: views('Join')
+         },
+         {
+            path: 'create',
+            name: 'CreateRoom',
+            component: views('CreateRoom')
+         },
+         {
+            path: 'login',
+            name: 'Login',
+            component: views('Login')
+         },
+         {
+            path: 'signup',
+            name: 'Signup',
+            component: views('SignUp')
+         }
+      ]
    }
 ]
 

@@ -11,17 +11,20 @@
 			<badge :type="getTypeFromDifficulty" rounded>DIFFICULTY : {{data.difficulty}}</badge>
 			<badge type="primary" rounded>Perticipants : {{data.noOfUsers}}</badge>
 		</div>
+		<base-button v-if="userId != null && data.userId != null && data.userId == userId" @click="gotomanageRoom" type="primary" size="sm" class="mt-4">MANAGE Room</base-button>
 		<base-button @click="$emit('join',data)" type="primary" size="sm" class="mt-4">JOIN Room</base-button>
 	</card>
 </template>
 
 <script>
+import {mapGetters} from "vuex"
 export default {
 	name: "RoomCard",
 	props: {
 		data: Object
 	},
 	computed: {
+		...mapGetters("USER",["userId"]),
 		roomPath() {
 			return "/rooms/" + this.data.name.toLowerCase().split(" ").join("-")
 		},
@@ -29,6 +32,11 @@ export default {
 			let { difficulty } = this.data
 			return difficulty === 'Easy'
 				? 'success' : difficulty === 'Medium' ? 'warning' : 'danger'
+		},
+	},
+	methods: {
+		gotomanageRoom(){
+			this.$router.push({path: '/manage-room/'+this.data.name})
 		}
 	}
 }

@@ -1,6 +1,6 @@
 <template>
-	<div id="app">
-		<main>
+	<div id="app" class="h-100">
+		<main class="h-100">
 			<fade-transition origin="center" mode="out-in" :duration="250">
 				<router-view />
 			</fade-transition>
@@ -16,6 +16,9 @@ export default {
 </script>
 
 <style lang="scss">
+	html,body{
+		height: 100%;	
+	}
 	body {
 		overflow: auto !important;
 		scroll-behavior: smooth !important;

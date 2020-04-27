@@ -25,7 +25,7 @@ const FETCH_ROOM = async name => {
       let usersSnapshot = await USERS(room.id).get()
 
       let users = []
-      usersSnapshot.forEach(user => users.push(user.data()))
+      usersSnapshot.forEach(user => users.push(Object.assign({id: user.id},user.data())))
 
       let questions = await QUESTIONS(room.id).doc("V1").get()
 
@@ -52,6 +52,7 @@ const CREATE_ROOM = async req => {
 
          // New Room data
          let newRoomData = {
+            userId: req.userId,
             name: req.name.toUpperCase(), createdAt: now(),
             code: UID().toUpperCase(), noOfUsers: 1,
             difficulty: req.difficulty,
@@ -63,7 +64,9 @@ const CREATE_ROOM = async req => {
          // New user data
          let newUserData = {
             name: req.userName.toUpperCase(),
-            joinedAt: now()
+            joinedAt: now(),
+            isApproved: true,
+            isOwner: true,
          }
 
          // Joining user to the room

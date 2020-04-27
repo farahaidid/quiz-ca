@@ -96,7 +96,7 @@ export default {
 				if (error) { this.modalError = message }
 				else {
 					this.modalError = null
-					this.$router.push("/rooms/" + name.toLowerCase().split(" ").join("-"))
+					this.$router.push("/rooms/" + name)
 				}
 			}
 			else { this.modalError = "You cann't leave the fields empty!" }
