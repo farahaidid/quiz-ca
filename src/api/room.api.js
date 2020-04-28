@@ -56,6 +56,7 @@ const CREATE_ROOM = async req => {
             name: req.name.toUpperCase(), createdAt: now(),
             code: UID().toUpperCase(), noOfUsers: 1,
             difficulty: req.difficulty,
+            category: req.category
          }
 
          // Creating new room
@@ -73,8 +74,10 @@ const CREATE_ROOM = async req => {
          let newUser = await USERS(newRoom.id).add(newUserData)
 
          // Fetching questions
-         let questions = (await QUESTIONS_API.get("?amount=50&difficulty=" + req.difficulty.toLowerCase())).data
-         let questions2 = (await QUESTIONS_API.get("?amount=50&difficulty=" + req.difficulty.toLowerCase())).data
+         let url = "?amount=50&difficulty=" + req.difficulty.toLowerCase()
+         if(req.category != 'any') url += '&category='+req.category
+         let questions = (await QUESTIONS_API.get(url)).data
+         let questions2 = (await QUESTIONS_API.get(url)).data
 
          questions.results = questions.results.concat(questions2.results)
 

@@ -30,6 +30,7 @@
 				</div>
 				<hr class="my-3" />
 				<badge type="success" rounded>DIFFICULTY : {{ROOM.difficulty}}</badge>
+				<badge type="success" rounded>CATEGORY : {{showCategoryByValue(ROOM.category)}}</badge>
 				<badge type="primary" rounded>PERTICIPANTS : {{ROOM.noOfUsers}}</badge>
 				<badge type="warning" rounded>TOP SCORE : {{topScore}} / 50</badge>
 				<badge type="danger" rounded>AVERAGE SCORE : {{averageScore}}</badge>
@@ -61,9 +62,11 @@ import { mapActions, mapGetters } from 'vuex'
 
 // Components
 import Questions from "../../components/Questions"
+import GLOBAL from "@/mixins/GLOBAL"
 
 export default {
 	name: "Room",
+	mixins:[GLOBAL],
 	data: () => ({
 		quizStarted: false,
 		room: null,

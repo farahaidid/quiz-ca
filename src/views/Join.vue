@@ -21,7 +21,7 @@
 				placeholder="Room name or code"
 			/>
 			<base-checkbox v-model="room.isCode" class="mb-3">It is a room code</base-checkbox>
-			<base-input v-model="room.userName" alternative type="text" placeholder="Enter your name" />
+			<base-input v-if="!isLogged" v-model="room.userName" alternative type="text" placeholder="Enter your name" />
 			<div class="d-flex mt-4">
 				<base-button @click="onClickJoinRoom" class="w-100" type="primary">Join room</base-button>
 								<div class="spacer"></div>
@@ -36,7 +36,7 @@
 <script>
 
 // Vuex
-import { mapActions } from "vuex"
+import { mapActions,mapGetters } from "vuex"
 
 export default {
 	name: "Join",
@@ -49,9 +49,13 @@ export default {
 		},
 		loading: false
 	}),
+	computed:{
+		...mapGetters("USER", ["isLogged","user"]),
+	},
 	methods: {
 		...mapActions("ROOM", ["JOIN_ROOM"]),
 		async onClickJoinRoom() {
+			if(this.isLogged) this.room.userName = this.user.fullName
 			let isValid = this.room.nameOrCode.trim() !== "" && this.room.userName.trim() !== ""
 			if (isValid) {
 				this.loading = true

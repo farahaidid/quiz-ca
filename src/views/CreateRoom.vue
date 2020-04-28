@@ -16,7 +16,7 @@
 				</button>
 			</div>
 			<base-input v-model="roomName" alternative type="text" placeholder="Enter room name" />
-			<base-input v-model="userName" alternative type="text" placeholder="Enter your name" />
+			<base-input v-if="!isLogged" v-model="userName" alternative type="text" placeholder="Enter your name" />
 			<div class="d-flex">
 				<base-dropdown>
 					<base-button slot="title" type="secondary" class="dropdown-toggle w-100">{{difficulty}}</base-button>
@@ -27,10 +27,19 @@
 						class="dropdown-item"
 					>{{item}}</li>
 				</base-dropdown>
-								<div class="spacer"></div>
-				<div class="text-center">
-					<base-button @click="createRoom" type="primary">Create room</base-button>
-				</div>
+				<div class="spacer"></div>
+				<base-dropdown>
+					<base-button slot="title" type="secondary" class="dropdown-toggle w-100">{{showCategoryByValue(category)}}</base-button>
+					<li
+						v-for="(item, index) in categories"
+						:key="index"
+						@click="category=item.value"
+						class="dropdown-item"
+					>{{item.text}}</li>
+				</base-dropdown>
+			</div>
+			<div class="text-center mt-3">
+				<base-button @click="createRoom" type="primary">Create room</base-button>
 			</div>
 			<div class="text-center mt-4">
 				<router-link to="/join">Join a room</router-link>
@@ -45,9 +54,11 @@
 
 // Vuex
 import { mapActions, mapGetters } from "vuex"
+import GLOBAL from "@/mixins/GLOBAL"
 
 export default {
 	name: "CreateRoom",
+	mixins: [GLOBAL],
 	data: () => ({
 		error: null,
 		roomName: "",
@@ -55,12 +66,14 @@ export default {
 		// Difficulty
 		difficulty: "Easy",
 		difficulties: ['Easy', 'Medium', 'Hard'],
-		loading: false
+		loading: false,
+		category: 'any',
 	}),
 	methods: {
 		...mapActions("ROOM", ["CREATE_ROOM"]),
 		async createRoom() {
 			if(!this.userId) return
+			if(this.isLogged) this.userName = this.user.fullName
 			let isValid = this.roomName.trim() !== "" && this.userName.trim() !== ""
 			if (isValid) {
 				this.loading = true;
@@ -68,25 +81,30 @@ export default {
 					userId: this.userId,
 					name: this.roomName,
 					userName: this.userName,
-					difficulty: this.difficulty
+					difficulty: this.difficulty,
+					category: this.category
 				})
 				this.loading = false
 				if (error) { this.error = message }
 				else {
 					if (this.error) this.error = null
-					this.$router.push("/rooms/" + name.toLowerCase().split(" ").join("-"))
+					this.$router.push("/rooms/" + name)
 				}
 			}
 		}
 	},
 	computed:{
-		...mapGetters("USER",["userId"]),
-	}
+		...mapGetters("USER",["userId","isLogged","user"]),
+	},
 };
 </script>
-<style lang="scss" scoped>
+<style scoped>
 	.section {
 		min-height: 100vh;
+	}
+	>>>.dropdown-menu.show {
+		max-height: 200px !important;
+		overflow: scroll !important;
 	}
 	
 </style>

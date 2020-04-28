@@ -1,6 +1,6 @@
 <template>
 	<div id="app" class="h-100">
-		<main class="h-100">
+		<main class="h-100" style="overflow:scroll">
 			<fade-transition origin="center" mode="out-in" :duration="250">
 				<router-view />
 			</fade-transition>

@@ -9,7 +9,8 @@
 		<hr class="my-3" />
 		<div>
 			<badge :type="getTypeFromDifficulty" rounded>DIFFICULTY : {{data.difficulty}}</badge>
-			<badge type="primary" rounded>Perticipants : {{data.noOfUsers}}</badge>
+			<badge type="primary" rounded>Perticipants : {{data.noOfUsers}}</badge> <br>
+			<badge class="ml-0" type="success" v-if="data.category" rounded>CATEGORY : {{showCategoryByValue(data.category)}}</badge>
 		</div>
 		<base-button v-if="userId != null && data.userId != null && data.userId == userId" @click="gotomanageRoom" type="primary" size="sm" class="mt-4">MANAGE Room</base-button>
 		<base-button @click="$emit('join',data)" type="primary" size="sm" class="mt-4">JOIN Room</base-button>
@@ -18,15 +19,17 @@
 
 <script>
 import {mapGetters} from "vuex"
+import GLOBAL from "@/mixins/GLOBAL"
 export default {
 	name: "RoomCard",
+	mixins:[GLOBAL],
 	props: {
 		data: Object
 	},
 	computed: {
 		...mapGetters("USER",["userId"]),
 		roomPath() {
-			return "/rooms/" + this.data.name.toLowerCase().split(" ").join("-")
+			return "/rooms/" + this.data.name
 		},
 		getTypeFromDifficulty() {
 			let { difficulty } = this.data

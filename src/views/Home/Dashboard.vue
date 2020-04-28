@@ -71,7 +71,8 @@ export default {
 		})
 	},
 	computed: {
-		...mapGetters('ROOM', ["ROOMS"])
+		...mapGetters('ROOM', ["ROOMS"]),
+		...mapGetters('USER', ["isLogged","user"]),
 	},
 	methods: {
 		...mapActions("ROOM", ["JOIN_ROOM", "FETCH_ROOMS"]),
@@ -83,7 +84,12 @@ export default {
 		},
 		onJoinModal(room) {
 			this.modalRoom = { ...this.modalRoom, ...room }
-			this.showJoinModal = true
+			if(this.isLogged){
+				this.modalRoom.userName = this.user.fullName
+				this.onClickJoinRoom()
+			}else{
+				this.showJoinModal = true
+			}
 		},
 		async onClickJoinRoom() {
 			let isValid = this.modalRoom.userName.trim() !== ""
